@@ -50,7 +50,7 @@ class LoginScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerText}>Login</Text>
+          <Text style={styles.headerText}>Welcome Driver!</Text>
         </View>
         <View style={styles.content}>
           <TextInput
@@ -182,123 +182,6 @@ class RegisterScreen extends React.Component {
   }
 }
 
-class CreateMoveScreen extends React.Component {
-  static navigationOptions = {
-    title: 'New Move'
-  };
-  constructor(props) {
-    super(props)
-    this.state = {
-      TextInputFrom: '',
-      TextInputTo: '',
-      TextInputDate: '',
-      TextInputRooms:''
-    }
-  }
-  CheckTextInputIsEmptyOrNot = () =>{
-    const { TextInputFrom }  = this.state ;
-    const { TextInputTo }  = this.state ;
-    const { TextInputDate }  = this.state ;
-    const { TextInputRooms }  = this.state ;
-
-
-    if(TextInputFrom == '' || TextInputTo == '' ||
-        TextInputDate == '' || TextInputRooms==''){
-          Alert.alert("You need to complete all the fields.");
-        }
-    else{
-      // Do something here which you want to if all the Text Input is filled.
-      Alert.alert("All Text Input is Filled.");
-      console.log(this.state);
-      fetch('https://maniavan-18000.appspot.com/moves', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          "start_place": TextInputFrom,
-          "end_place": TextInputTo,
-          "date": TextInputDate,
-          "user_id": "1",
-        })
-      })
-      .then((response) => response.json())
-      .then((responseJson) => {
-        //Login successfully
-        if (responseJson.user_id){
-          Alert.alert(responseJson.user_id+'');
-        }
-        //Login error
-        else{
-          Alert.alert(responseJson.error+'');
-        }
-      })
-      .catch((error) => {
-          console.error(error);
-      });
-
-    }
-
-  }
-  render() {
-    const {navigate} =this.props.navigation;
-    return   <View style={styles.MainContainer}>
-      <Text style={[styles.headline]}>New Move</Text>
-            <TextInput
-              // Adding hint in Text Input using Place holder.
-              placeholder="Enter Starting Place"
-              onChangeText={TextInputFrom=> this.setState({TextInputFrom})}
-              // Making the Under line Transparent.
-              underlineColorAndroid='transparent'
-              style={styles.TextInputStyleClass}
-            />
-            <TextInput
-              // Adding hint in Text Input using Place holder.
-              placeholder="Enter Arriving Place"
-              onChangeText={TextInputTo => this.setState({TextInputTo})}
-              // Making the Under line Transparent.
-              underlineColorAndroid='transparent'
-              style={styles.TextInputStyleClass}
-            />
-            <TextInput
-              // Adding hint in Text Input using Place holder.
-              placeholder="Enter Date"
-              onChangeText={TextInputDate => this.setState({TextInputDate})}
-              // Making the Under line Transparent.
-              underlineColorAndroid='transparent'
-              style={styles.TextInputStyleClass}
-            />
-            <TextInput
-              // Adding hint in Text Input using Place holder.
-              placeholder="Enter Number of Rooms"
-              onChangeText={TextInputRooms => this.setState({TextInputRooms})}
-              // Making the Under line Transparent.
-              underlineColorAndroid='transparent'
-              style={styles.TextInputStyleClass}
-            />
-            <Button
-              onPress={() => navigate('MoveDetails')}
-              title="Check your Price"
-            />
-            <Button title="CONFIRM" onPress={this.CheckTextInputIsEmptyOrNot} color="#2196F3" />
-      </View>;
-  }
-}
-
-class MoveDetailsScreen extends React.Component {
-  static navigationOptions = {
-    title: 'New Move'
-  };
-  render() {
-    return    <View style={styles.MainContainer}>
-              <MapView style={[styles.map]} showsUserLocation={true} />
-              <Text style={[styles.headline]}>Estimated Price</Text>
-              <Text style={[styles.headline]}>42$</Text>
-
-      </View>
-  }
-}
 
 class Move extends Component {
   render() {
@@ -340,7 +223,7 @@ class HomeScreen extends React.Component {
   _keyExtractor = (item, index) => index;
 
   componentDidMount() {
-    return fetch('https://maniavan-18000.appspot.com/moves?user_id=1')
+    return fetch('https://maniavan-18000.appspot.com/moves?user_id=11')
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
@@ -350,6 +233,9 @@ class HomeScreen extends React.Component {
       .catch((error) => {
         console.error(error);
       });
+      console.log("YOOO")
+      console.log(responseJson)
+
   }
 
   render() {
@@ -363,12 +249,7 @@ class HomeScreen extends React.Component {
         data={this.state.dataSource}
         renderItem = {this.renderRow}
         keyExtractor = {this._keyExtractor} />
-        <Button
-          onPress={() => navigate('CreateMove')}
-          title="Publish your move"
-          color="#205166"
-          accessibilityLabel="Go to create move"
-        />
+
       </View>
     );
 
@@ -379,8 +260,6 @@ const App = StackNavigator({
   Login: { screen: LoginScreen },
   Home: { screen: HomeScreen },
   Register: { screen: RegisterScreen },
-  CreateMove: { screen: CreateMoveScreen },
-  MoveDetails: { screen: MoveDetailsScreen },
 });
 
 export default App;
@@ -388,7 +267,6 @@ export default App;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#eee',
     alignItems: 'center',
     alignSelf: "center"
   },
@@ -478,7 +356,7 @@ const styles = StyleSheet.create({
   },
   container2: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#eee',
     // alignItems: 'center',
     // justifyContent: 'center',
   },
