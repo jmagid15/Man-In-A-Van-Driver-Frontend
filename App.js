@@ -3,7 +3,6 @@ import {  StyleSheet, Text,Button, View, TextInput,Alert, TouchableHighlight, Fl
 import { StackNavigator } from 'react-navigation';
 
 import MapView from 'react-native-maps';
-const remote = 'http://f9view.com/wp-content/uploads/2013/12/Cool-Background-Images-For-iPhone-6.jpg';
 class LoginScreen extends React.Component {
   static navigationOptions = {
     title: 'Login',
@@ -18,7 +17,7 @@ class LoginScreen extends React.Component {
     }
     else{
       const { navigate } = this.props.navigation;
-      fetch('https://maniavan-18000.appspot.com/users/login/', {
+      fetch('https://maniavan-18000.appspot.com/users/login_driver', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -80,12 +79,6 @@ class LoginScreen extends React.Component {
               color="#205166"
               accessibilityLabel="Register"
             />
-            <Button
-              onPress={() => navigate('Home', { user_id: 1 })}
-              title="Bypass"
-              color="#205166"
-              accessibilityLabel="Bypass"
-            />
           </View>
   </View>
 
@@ -121,17 +114,25 @@ class RegisterScreen extends React.Component {
           email: email,
           password: password,
           password_confirmation: password_confirmation,
-          kind: 'customer',
+          kind: 'driver',
         })
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        //Login successfully
         if (responseJson.user_id){
           navigate('Home', { user_id: responseJson.user_id })
         }
         //Login error
-        else{
+        else if (responseJson.message){
+          Alert.alert(
+              'Message',
+              responseJson.message+'',
+              [
+                {text: 'OK', onPress: () => navigate('Login')},
+              ],
+              { cancelable: false }
+            )
+        }else if (responseJson.error){
           Alert.alert(responseJson.error+'');
         }
       })
@@ -172,12 +173,6 @@ class RegisterScreen extends React.Component {
             color="#205166"
             accessibilityLabel="Register"
           />
-          <Button
-  onPress={onPressLearnMore}
-  title="Learn More"
-  color="#841584"
-  accessibilityLabel="Learn more about this purple button"
-/>
         </View>
         <View style={styles.footer}>
           <Button
@@ -209,8 +204,10 @@ class Move extends Component {
 class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
+    user_id = this.props.navigation.state.params.user_id;
     this.state = {
-      dataSource: ''
+      dataSource: '',
+      user_id: user_id
     }
   }
 
@@ -233,7 +230,7 @@ class HomeScreen extends React.Component {
   _keyExtractor = (item, index) => index;
 
   componentDidMount() {
-    return fetch('https://maniavan-18000.appspot.com/moves?user_id=11')
+    return fetch('https://maniavan-18000.appspot.com/moves?user_id='+this.state.user_id)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
@@ -259,7 +256,6 @@ class HomeScreen extends React.Component {
         data={this.state.dataSource}
         renderItem = {this.renderRow}
         keyExtractor = {this._keyExtractor} />
-
       </View>
     );
 
