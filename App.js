@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, Alert, TouchableHighlight, FlatList, StatusBar } from 'react-native';
+import React, { Component,PropTypes } from 'react';
+import {  StyleSheet, Text,Button, View, TextInput,Alert, TouchableHighlight, FlatList, StatusBar, Image} from 'react-native';
 import { StackNavigator } from 'react-navigation';
-import MapView from 'react-native-maps';
 
+import MapView from 'react-native-maps';
+const remote = 'http://f9view.com/wp-content/uploads/2013/12/Cool-Background-Images-For-iPhone-6.jpg';
 class LoginScreen extends React.Component {
   static navigationOptions = {
     title: 'Login',
@@ -47,46 +48,49 @@ class LoginScreen extends React.Component {
   }
   render() {
     const { navigate } = this.props.navigation;
+    const resizeMode = 'center';
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Welcome Driver!</Text>
-        </View>
-        <View style={styles.content}>
-          <TextInput
-            style={styles.loginInput}
-            placeholder="Enter your email"
-            onChangeText={(text) => this.setState({email:text})}
-          />
-          <TextInput
-            secureTextEntry={true}
-            style={styles.loginInput}
-            placeholder="Enter your password"
-            onChangeText={(text) => this.setState({password:text})}
-          />
-          <Button
-            onPress={() => this._login(this.state.email, this.state.password)}
-            title="Login"
-            color="#205166"
-            accessibilityLabel="Login"
-          />
-        </View>
-        <View style={styles.footer}>
-          <Button
-            onPress={() => navigate('Register')}
-            title="Register"
-            color="#205166"
-            accessibilityLabel="Register"
-          />
-          <Button
-            onPress={() => navigate('Home', { user_id: 1 })}
-            title="Bypass"
-            color="#205166"
-            accessibilityLabel="Bypass"
-          />
-        </View>
-      </View>
-    );
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Login</Text>
+          </View>
+          <View style={styles.content}>
+            <TextInput
+              style={styles.TextInputStyleClass}
+              placeholder="Enter your email"
+              onChangeText={(text) => this.setState({email:text})}
+            />
+            <TextInput
+              secureTextEntry={true}
+              style={styles.loginInput}
+              placeholder="Enter your password"
+              onChangeText={(text) => this.setState({password:text})}
+            />
+            <Button
+              onPress={() => this._login(this.state.email, this.state.password)}
+              title="Login"
+              color="#205166"
+              accessibilityLabel="Login"
+            />
+          </View>
+          <View style={styles.footer}>
+            <Button
+              onPress={() => navigate('Register')}
+              title="Register"
+              color="#205166"
+              accessibilityLabel="Register"
+            />
+            <Button
+              onPress={() => navigate('Home', { user_id: 1 })}
+              title="Bypass"
+              color="#205166"
+              accessibilityLabel="Bypass"
+            />
+          </View>
+  </View>
+
+
+);
   }
 }
 
@@ -168,6 +172,12 @@ class RegisterScreen extends React.Component {
             color="#205166"
             accessibilityLabel="Register"
           />
+          <Button
+  onPress={onPressLearnMore}
+  title="Learn More"
+  color="#841584"
+  accessibilityLabel="Learn more about this purple button"
+/>
         </View>
         <View style={styles.footer}>
           <Button
@@ -266,9 +276,16 @@ export default App;
 
 const styles = StyleSheet.create({
   container: {
+  flex: 1,
+  width: undefined,
+  height: undefined,
+  backgroundColor:'transparent',
+  justifyContent: 'center',
+  alignItems: 'center',
+    },
+  backgroundImage: {
     flex: 1,
-    alignItems: 'center',
-    alignSelf: "center"
+    resizeMode: 'cover', // or 'stretch'
   },
   header : {
     flex: 1,
@@ -324,12 +341,10 @@ const styles = StyleSheet.create({
     margin: 0,
   },
   TextInputStyleClass: {
-    textAlign: 'center',
-    marginBottom: 7,
-    height: 40,
-    borderWidth: 1,
-    // Set border Hex Color Code Here.
-    borderColor: '#FF5722',
+     color: 'blue',
+     paddingLeft: 0,
+     fontSize: 20,
+
   },
   test: {
     //flex: 1,
