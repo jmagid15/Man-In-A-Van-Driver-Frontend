@@ -298,7 +298,7 @@ class HomeScreen extends React.Component {
   _keyExtractor = (item, index) => index;
 
   componentDidMount() {
-    return fetch('https://maniavan-18000.appspot.com/moves?user_id='+this.state.user_id)
+    return fetch('https://maniavan-18000.appspot.com/moves?driver_id='+this.state.user_id)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
