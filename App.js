@@ -346,11 +346,12 @@ class MoveDetailsScreen extends React.Component {
 
 
   render() {
-    const {customer_id, user_email, driver_email, move_id, date, end_place, price, start_place} = this.props.navigation.state.params
+    const {customer_id, customer_email, driver_id, driver_email, move_id, date, end_place, price, start_place} = this.props.navigation.state.params;
+    console.log(this.props.navigation.state.params)
     return (
       <View style={styles.container}>
         <Text style = {styles.detailsHead}>Planned move for</Text>
-        <Text style = {styles.detailsHead}>{user_email}</Text>
+        <Text style = {styles.detailsHead}>{customer_email}</Text>
         <View style = {styles.mapView}>
           <MapView style={styles.map} showsUserLocation={true} />
         </View>
@@ -359,7 +360,7 @@ class MoveDetailsScreen extends React.Component {
             buttonStyle={styles.buttonBasicWithHeight}
             icon = {{type:'entypo', name:'mail'}}
             onPress = {() => {
-              Linking.openURL('mailto:' + user_email + '?subject=Planned Move Inquiry&body=Hello, \n I would like to reach out about my planned move. \n Thanks!')
+              Linking.openURL('mailto:' + customer_email + '?subject=Planned Move Inquiry&body=Hello, \n I would like to reach out about my planned move. \n Thanks!')
             }}
             //large
             title="Contact customer"
@@ -372,7 +373,7 @@ class MoveDetailsScreen extends React.Component {
               fetch('https://maniavan-18000.appspot.com/moves?move_id=' + move_id, {
                 method: 'delete'
               })
-              .then((response) => navigate('Home', { user_id: customer_id, user_email: user_email }) );
+              .then((response) => navigate('Home', { user_id: driver_id, user_email: driver_email }) );
             }}
             //large
             title="Cancel move"
