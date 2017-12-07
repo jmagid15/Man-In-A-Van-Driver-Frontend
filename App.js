@@ -158,7 +158,7 @@ class RegisterScreen extends React.Component {
       .then((response) => response.json())
       .then((responseJson) => {
         if (responseJson.user_id){
-          navigate('Home', { user_id: responseJson.user_id })
+          navigate('Home', { user_id: responseJson.user_id, user_email: this.state.email})
         }
         //Login error
         else if (responseJson.message){
@@ -183,44 +183,49 @@ class RegisterScreen extends React.Component {
   render() {
     const { navigate } = this.props.navigation;
     return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Register</Text>
+      <KeyboardAvoidingView
+      style={styles.container}
+      behavior="padding"
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.background}></View>
+        </TouchableWithoutFeedback>
+        <View style = {{flex:0.4}}>
+          <Text style={styles.headline}>Register</Text>
         </View>
         <View style={styles.content}>
-          <TextInput
-            style={styles.loginInput}
-            placeholder="Enter your email"
-            onChangeText={(text) => this.setState({email:text})}
-          />
-          <TextInput
-            secureTextEntry={true}
-            style={styles.loginInput}
-            placeholder="Enter your password"
-            onChangeText={(text) => this.setState({password:text})}
-          />
-          <TextInput
-            secureTextEntry={true}
-            style={styles.loginInput}
-            placeholder="Confirm your password"
-            onChangeText={(text) => this.setState({password_confirmation:text})}
-          />
-          <Button
+          <View style = {styles.inputTextView}>
+            <TextInput
+              style={styles.loginInput}
+              placeholder="Enter your email"
+              onChangeText={(text) => this.setState({email:text})}
+            />
+          </View>
+          <View style = {styles.inputTextView}>
+            <TextInput
+              secureTextEntry={true}
+              style={styles.loginInput}
+              placeholder="Enter your password"
+              onChangeText={(text) => this.setState({password:text})}
+            />
+          </View>
+          <View style = {styles.inputTextView}>
+            <TextInput
+              secureTextEntry={true}
+              style={styles.loginInput}
+              placeholder="Confirm your password"
+              onChangeText={(text) => this.setState({password_confirmation:text})}
+            />
+          </View>
+          <RNButton
             onPress={() => this._register(this.state.email, this.state.password, this.state.password_confirmation)}
-            title="Register"
-            color="#205166"
-            accessibilityLabel="Register"
+            buttonStyle= {styles.buttonBasic}
+            large
+            title="Sign Up"
+            icon = {{type:'entypo', name:'add-user'}}
           />
         </View>
-        <View style={styles.footer}>
-          <Button
-            onPress={() => navigate('Login')}
-            title="Go to Login"
-            color="#205166"
-            accessibilityLabel="Go to Login"
-          />
-        </View>
-      </View>
+      </KeyboardAvoidingView>
     );
   }
 }
@@ -228,24 +233,42 @@ class RegisterScreen extends React.Component {
 
 class Move extends Component {
   render() {
+    Moment.locale('en');
+    var itemDate = this.props.dateofmove;
     return (
-      <View style = {styles.test2}>
-        <Text>DateOfMove: {this.props.dateofmove}</Text>
-        <Text>Price: {this.props.price}</Text>
-        <Text>Start Point: {this.props.start_pt}</Text>
-        <Text>End Pt: {this.props.end_pt}</Text>
+      <View style = {styles.moveItem}>
+        <View style = {styles.moveRow}>
+          <Text style = {styles.moveDate}>{Moment(itemDate).format('MMM Do')}</Text>
+          <Text style = {styles.movePrice}>${this.props.price}</Text>
+        </View>
+        <View style = {styles.moveRow}>
+          <Text adjustsFontSizeToFit={true} style = {styles.placeDest}>{this.props.start_pt}</Text>
+          <Icon
+            color= '#fff'
+            size={30}
+            name='arrow-right'
+            type='entypo'
+          />
+          <Text adjustsFontSizeToFit={true} style = {styles.placeDest}>{this.props.end_pt}</Text>
+        </View>
       </View>
     )
   }
 }
 
 class HomeScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Home'
+  }
+
   constructor(props) {
     super(props);
     user_id = this.props.navigation.state.params.user_id;
+    user_email = this.props.navigation.state.params.user_email;
     this.state = {
       dataSource: '',
-      user_id: user_id
+      user_id: user_id,
+      user_email: user_email
     }
   }
 
@@ -256,12 +279,19 @@ class HomeScreen extends React.Component {
     const end_pt = `${item.end_place}`
 
     let actualRowComponent =
-      <View style = {styles.test}>
+      <View style = {styles.moveItemView}>
         <Move dateofmove = {dateofmove} price = {price} start_pt = {start_pt} end_pt = {end_pt} />
       </View>;
 
     return (
-      actualRowComponent
+      <TouchableHighlight
+        activeOpacity={0.5}
+        underlayColor = '#FFFFFF00'
+        onPress = {() => {
+          this.props.navigation.navigate('MoveDetails', {...item, user_email: this.state.user_email});
+        }}>
+        {actualRowComponent}
+      </TouchableHighlight>
     );
   }
 
@@ -278,25 +308,84 @@ class HomeScreen extends React.Component {
       .catch((error) => {
         console.error(error);
       });
-      console.log("YOOO")
-      console.log(responseJson)
-
   }
 
   render() {
     const { navigate } = this.props.navigation;
     return (
-      <View style = {styles.container2}>
-        <Text style = {styles.headline2}>Your Moves</Text>
-        <StatusBar hidden={false} translucent={false} animated={true} />
+      <View style = {styles.container}>
+        <Text style = {styles.headline}>Your Moves</Text>
         <FlatList
-        style = {styles.container2}
+        style = {styles.flatListStyle}
         data={this.state.dataSource}
-        renderItem = {this.renderRow}
+        renderItem = {this.renderRow.bind(this)}
         keyExtractor = {this._keyExtractor} />
+        {
+        // <View style = {styles.bottomButtonContainer}>
+        //   <Icon
+        //     color= '#1ccc31'
+        //     size={40}
+        //     backgroundColor = '#000000'
+        //     raised
+        //     name='add'
+        //     type='MaterialIcons'
+        //     onPress={() => navigate('CreateMove', { user_id: this.state.user_id, user_email: this.state.user_email })}
+        //   />
+        // </View>
+        }
       </View>
     );
 
+  }
+}
+
+class MoveDetailsScreen extends React.Component {
+  static navigationOptions = {
+    title: 'Move Details'
+  };
+
+
+  render() {
+    const {customer_id, user_email, driver_email, move_id, date, end_place, price, start_place} = this.props.navigation.state.params
+    return (
+      <View style={styles.container}>
+        <Text style = {styles.detailsHead}>Planned move for</Text>
+        <Text style = {styles.detailsHead}>{user_email}</Text>
+        <View style = {styles.mapView}>
+          <MapView style={styles.map} showsUserLocation={true} />
+        </View>
+        <View style = {styles.detailsButtons}>
+          <RNButton
+            buttonStyle={styles.buttonBasicWithHeight}
+            icon = {{type:'entypo', name:'mail'}}
+            onPress = {() => {
+              Linking.openURL('mailto:' + user_email + '?subject=Planned Move Inquiry&body=Hello, \n I would like to reach out about my planned move. \n Thanks!')
+            }}
+            //large
+            title="Contact customer"
+          />
+          <RNButton
+            buttonStyle={styles.buttonBasicWithHeight}
+            icon = {{type:'feather', name:'x'}}
+            onPress = {() => {
+              const {navigate} = this.props.navigation;
+              fetch('https://maniavan-18000.appspot.com/moves?move_id=' + move_id, {
+                method: 'delete'
+              })
+              .then((response) => navigate('Home', { user_id: customer_id, user_email: user_email }) );
+            }}
+            //large
+            title="Cancel move"
+          />
+        </View>
+        <View style = {styles.detailsContainer}>
+          <Text style={styles.detailsFont}>Start Place: {start_place}</Text>
+          <Text style={styles.detailsFont}>End Place: {end_place}</Text>
+          <Text style={styles.detailsFont}>Date: {Moment(date).format('MMM DD, YYYY')}</Text>
+          <Text style={styles.detailsFont}>Price: ${price}</Text>
+        </View>
+      </View>
+    )
   }
 }
 
@@ -304,6 +393,7 @@ const App = StackNavigator({
   Login: { screen: LoginScreen },
   Home: { screen: HomeScreen },
   Register: { screen: RegisterScreen },
+  MoveDetails: { screen: MoveDetailsScreen }
 });
 
 export default App;
